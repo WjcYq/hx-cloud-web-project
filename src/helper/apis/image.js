@@ -54,17 +54,14 @@ export default {
    * @param   {number}  typeId   设备类型ID
    */
   getTypeImageList(typeId) {
-    return $ajax.get(serverUrl(`type/${typeId}/TypeImage`))
+    return $ajax.get(serverUrl('type/' + typeId + '/TypeImage'))
   },
   /**
    * 删除设备类型图片
    * @param   {string}    id      图片编号
    */
-  typeImageDelete(id) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, id }
-    return $ajax.post(serverUrl('TypeImages/TypeImageDelete'), data)
+  typeImageDelete({ typeId, id }) {
+    return $ajax.delete(serverUrl('type/' + typeId + '/TypeImage/' + id))
   },
   /**
    * 更新设备图片名称、序号
@@ -77,5 +74,8 @@ export default {
     const token = $utils.getCookie('token')
     const data = { account, token, Id, ImageName, Sn }
     return $ajax.put(serverUrl('TypeImages/TypeImageSave'), data)
+  },
+  uploadImage({ typeId, data }) {
+    return $ajax.post(serverUrl('type/' + typeId + '/TypeImage'), data)
   }
 }

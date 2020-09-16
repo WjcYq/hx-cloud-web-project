@@ -8,24 +8,26 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} / {{ $t('template') }} / {{ activeTpl.TempName }} / {{ $t('panel') }} /</span>
+      <span
+        style="font-weight:bold"
+      >{{ activeNode.data.typeName }} / {{ $t('template') }} / {{ activeTpl.TempName }} / {{ $t('panel') }} /</span>
       <span>{{ $t('deviceParam') }}</span>
       <!-- search from -->
     </div>
-    <el-form class="form-group" :inline="true" v-if="activeTpl.Id">
+    <el-form class="form-group" :inline="true" v-if="activeTpl.id">
       <el-form-item>
         <el-button type="primary" icon="plus" @click="onAddClick">{{ $t('add') }}</el-button>
       </el-form-item>
     </el-form>
     <!-- table -->
-    <el-table :data="argsData" border>
-      <el-table-column prop="DataName" label="参数名称"></el-table-column>
-      <el-table-column prop="DataType" label="参数类型"></el-table-column>
-      <el-table-column prop="DataValue" label="参数值"></el-table-column>
+    <el-table :data="tableData" border>
+      <el-table-column prop="dataName" label="参数名称"></el-table-column>
+      <el-table-column prop="dataType" label="参数类型"></el-table-column>
+      <el-table-column prop="dataValue" label="参数值"></el-table-column>
       <el-table-column label="操作" width="150">
         <template v-slot="scope">
           <el-button @click="onEditClick(scope.row)" type="primary" size="small">{{ $t('edit') }}</el-button>
-          <el-button @click="onDelClick(scope.row.Id)" type="danger" size="small">{{ $t('delete') }}</el-button>
+          <el-button @click="onDelClick(scope.row)" type="danger" size="small">{{ $t('delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -41,21 +43,28 @@
       ></el-pagination>
     </div>
     <!-- dialog -->
-    <el-dialog :visible="isDialogVisible" width="30%" @close="isDialogVisible = false" class="edit-dialog" :close-on-click-modal="false" :show-close="false">
+    <el-dialog
+      :visible="isDialogVisible"
+      width="30%"
+      @close="isDialogVisible = false"
+      class="edit-dialog"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
       <span slot="title" class="el-dialog__title">
         【{{ activeTpl.TempName }}】
         <span>{{ isAdd ? $t('adds') : $t('edits') }}{{ $t('deviceParam') }}</span>
       </span>
       <el-form :model="fillForm" :rules="rules" ref="fillForm">
         <div class="form-group col-sm-11">
-          <el-form-item label="参数名称" prop="DataName">
-            <el-input v-model="fillForm.DataName"></el-input>
+          <el-form-item label="参数名称" prop="dataName">
+            <el-input v-model="fillForm.dataName"></el-input>
           </el-form-item>
-          <el-form-item label="参数类型" prop="DataType">
-            <el-input disabled v-model="fillForm.DataType"></el-input>
+          <el-form-item label="参数类型" prop="dataType">
+            <el-input disabled v-model="fillForm.dataType"></el-input>
           </el-form-item>
-          <el-form-item label="参数值" prop="DataValue">
-            <el-input v-model="fillForm.DataValue"></el-input>
+          <el-form-item label="参数值" prop="dataValue">
+            <el-input v-model="fillForm.dataValue"></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -88,12 +97,12 @@ export default {
       isAdd: true,
       argsData: [],
       fillForm: {
-        DataValue: '',
-        DataName: '',
-        DataType: '字符串'
+        dataValue: '',
+        dataName: '',
+        dataType: '字符串'
       },
       rules: {
-        DataValue: [
+        dataValue: [
           {
             required: true,
             message: '请输入参数值',
@@ -106,7 +115,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        DataName: [
+        dataName: [
           {
             required: true,
             message: '请输入参数名称',
@@ -126,13 +135,13 @@ export default {
         pageSize: 0, // 每页显示个数
         pageNo: 1, // 当前第几页
         DataKey: '',
-        DataName: '',
+        dataName: '',
         TempId: ''
       },
       tableData: [],
       pageTotal: 0, // 总条数
       // pageSize: 10, // 每页显示个数
-      pageSizes: [10, 20, 30], // 每页显示个数选择器的选项设置
+      pageSizes: [10, 20, 30] // 每页显示个数选择器的选项设置
     }
   },
 
@@ -145,7 +154,7 @@ export default {
       this.handleRefresh()
     },
     activeTpl(newVal) {
-      if (newVal.Id) {
+      if (newVal.id) {
         this.argsData = newVal.ArgsData
         // this.handleRefresh()
       }
@@ -164,12 +173,11 @@ export default {
             const tableData = result.data
             tableData.forEach(item => {
               this.tableData.push({
-                ...item,
-                Unit: $utils.isJsonString(item.Unit) ? JSON.parse(item.Unit) : [`${item.Unit}`]
+                ...item
               })
             })
 
-            this.pageTotal = result.DataCount
+            this.pageTotal = result.count
           })
           .catch(errMsg => {
             this.$message.error(errMsg)
@@ -184,11 +192,11 @@ export default {
     // 新增数据
     onAddClick() {
       this.fillForm = {
-        TemplateId: this.activeTpl.Id,
-        Id: '',
-        DataValue: '',
-        DataName: '',
-        DataType: '字符串'
+        TemplateId: this.activeTpl.id,
+        id: '',
+        dataValue: '',
+        dataName: '',
+        dataType: '字符串'
       }
       this.isAdd = true
       this.isDialogVisible = true
@@ -206,10 +214,17 @@ export default {
     onSureClick() {
       this.$refs.fillForm.validate(valid => {
         if (!valid) return
+        const postData = {
+          TypeId: this.fillForm.typeId,
+          Id: this.fillForm.id,
+          DataName: this.fillForm.dataName,
+          DataType: this.fillForm.dataType,
+          DataValue: this.fillForm.dataValue
+        }
         if (this.isAdd) {
           // 新增
           this.$apis.deviceType
-            .addTemplateArgs(this.fillForm)
+            .addTemplateArgs(postData)
             .then(result => {
               this.$message.success(result.message)
               this.isDialogVisible = false
@@ -222,7 +237,7 @@ export default {
         } else {
           // 编辑
           this.$apis.deviceType
-            .saveTemplateArgs(this.fillForm)
+            .saveTemplateArgs(postData)
             .then(result => {
               this.$message.success(result.message)
               this.isDialogVisible = false
@@ -236,11 +251,11 @@ export default {
       })
     },
     // 删除已经保存的数据
-    onDelClick(id) {
+    onDelClick(data) {
       this.$confirm('是否删除该记录？', '提示', { cancelButtonClass: 'el-button--cancel', closeOnClickModal: false })
         .then(() => {
           this.$apis.deviceType
-            .removeTemplateArgs(id)
+            .removeTemplateArgs(data)
             .then(result => {
               this.$message.success(result.message)
               this.handleRefresh()
@@ -254,7 +269,7 @@ export default {
           this.$message.success('取消删除')
         })
     },
-     // 每页显示条目个数改变时
+    // 每页显示条目个数改变时
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`)
       this.searchForm.pageSize = val
@@ -265,7 +280,7 @@ export default {
       this.searchForm.pageNo = val
       this.handleRefresh()
       // console.log(`当前页: ${val}`)
-    },
+    }
   }
 }
 </script>

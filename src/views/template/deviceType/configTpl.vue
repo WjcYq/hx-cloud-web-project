@@ -8,7 +8,7 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} / {{ $t('template') }} / {{ activeTpl.TempName }} /</span>
+      <span style="font-weight:bold">{{ activeNode.data.typeName }} / {{ $t('template') }} / {{ activeTpl.TempName }} /</span>
       <span>{{ $t('deviceConfig') }}</span>
       <!-- search from -->
     </div>

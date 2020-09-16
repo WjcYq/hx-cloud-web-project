@@ -8,12 +8,12 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} /</span>
+      <span style="font-weight:bold">{{ activeNode.data.typeName }} /</span>
       <span>{{ $t('deviceType') + $t('statistical') }}</span>
     </div>
     <el-row>
       <el-col>
-        <el-form class="form-group" :inline="true" v-if="activeNode.data.Id">
+        <el-form class="form-group" :inline="true" v-if="activeNode.data.id">
           <el-form-item>
             <el-button type="primary" icon="plus" @click="onAddClick()">{{ $t('add') }}</el-button>
           </el-form-item>
@@ -61,7 +61,7 @@
     </div>-->
     <el-dialog :visible="isDialogVisible" width="30%" @close="isDialogVisible = false" class="edit-dialog" :close-on-click-modal="false" :show-close="false">
       <span slot="title" class="el-dialog__title">
-        【{{ activeNode.data.DeviceTypeName }}】
+        【{{ activeNode.data.typeName }}】
         <span>{{ isAdd ? $t('adds') : $t('edits') }}</span>
         {{ $t('deviceType') + $t('statistical') }}
       </span>
@@ -255,7 +255,7 @@ export default {
       pageTotal: 0, // 总条数
       pageSizes: [10, 20, 30], // 每页显示个数选择器的选项设置
       searchForm: {
-        sortData: 'Id',
+        sortData: 'id',
         sortType: 'asc',
         Key: '',
         Name: '',
@@ -291,7 +291,7 @@ export default {
   watch: {
     // activeNode(newVal) {
     //   this.searchForm.TypeId = newVal.data.Idz
-    //   this.fillForm.TypeId = newVal.data.Id
+    //   this.fillForm.TypeId = newVal.data.id
     //   this.handleRefresh()
     // }
     'activeNode.data'(newVal) {
@@ -436,7 +436,7 @@ export default {
         .then(() => {
           this.$apis.deviceType
             .typeStatisticsInfoRemove({
-              Id: rowData.Id,
+              id: rowData.id,
               TypeId: rowData.TypeId
             })
             .then(result => {

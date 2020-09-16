@@ -40,7 +40,7 @@ export default {
    * @param {number} Order            排序
    */
   updateDeviceType({ id, icon, typeName, description }) {
-    const data = { TypeName: typeName, ICON: icon, Id: id, Description:description  }
+    const data = { TypeName: typeName, ICON: icon, Id: id, Description: description }
     return $ajax.put(serverUrl(`Type/${id}`), data)
   },
   /**
@@ -116,9 +116,7 @@ export default {
    * @description   ShowState     展示层级：0表示设备级，1代表场站级，2代表项目级，3代表首页;
    * @description   Name          要统计的数据名称;
    */
-  typeStatisticsInfoSave({ Id, Key, StaticsType, DisplayType, TypeId, Standard, Filter, FilterType, ShowState, SUnit, Name }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
+  typeStatisticsInfoSave({ PageNo, PageSize, Search, OrderBy, OrderType, TypeId }) {
     const data = {
       account,
       token,
@@ -142,10 +140,8 @@ export default {
    * @param {string}  TypeId        设备类型标示
    */
   typeStatisticsInfoRemove({ Id, TypeId }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, Id, TypeId }
-    return $ajax.post(serverUrl('TypeStatisticsInfo/TypeStatisticsInfoRemove'), data)
+    const data = { Id }
+    return $ajax.delete(serverUrl(`type/${TypeId}/TypeDataDefine/${Id}`), data)
   },
 
   // ------------------------- Schema (设备类型模式) -----------------
@@ -167,11 +163,9 @@ export default {
    * @description ParentId      父模式标示
    * @description SchemaType    模式类型（0：自动，1：自定义）
    */
-  addSchema({ Key, Name, Value, TypeId, ParentId, SchemaType }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, Key, Name, Value, TypeId, ParentId, SchemaType }
-    return $ajax.post(serverUrl('Schema/AddSchema'), data)
+  addSchema({ typeId, Name, DataDefineId, Value, ParentId, SchemaType }) {
+    const data = { Name, DataDefineId, Value, ParentId, SchemaType }
+    return $ajax.post(serverUrl(`type/${typeId}/TypeSchema`), data)
   },
   /**
    * 更新类型模式
@@ -183,21 +177,16 @@ export default {
    * @description TypeId        设备类型标示
    * @description ParentId      父模式标示
    */
-  updateSchema({ Id, Key, Name, Value, TypeId, ParentId }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, Id, Key, Name, Value, TypeId, ParentId }
-    return $ajax.put(serverUrl('Schema/UpdateSchema'), data)
+  updateSchema({ Id, Name, typeId }) {
+    const data = { Id, Name }
+    return $ajax.put(serverUrl(`type/${typeId}/TypeSchema`), data)
   },
   /**
    * 删除类型模式
    * @param {string} Id            模式标示
    */
-  removeSchema(Id) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, Id }
-    return $ajax.delete(serverUrl('Schema/RemoveSchema'), data)
+  removeSchema({ typeId, id }) {
+    return $ajax.delete(serverUrl(`type/${typeId}/TypeSchema/${id}`))
   },
 
   // ------------------------- DeviceTypeTemplate(设备类型模板) -----------------
@@ -273,9 +262,9 @@ export default {
    * @param {String} DataKey        查询：数据标识
    * @param {String} DataName       查询：数据名称
    */
-  getTemplateProfile({ TempId, sortData, sortType, pageNo, pageSize }) {
-    const data = { OrderBy: sortData, OrderType: sortType, PageNo: pageNo, PageSize: pageSize }
-    return $ajax.get(serverUrl(`type/${TempId}/TypeDataDefine`), data)
+  getTemplateProfile({ tempId, PageNo, PageSize, Search, OrderBy, OrderType, Category }) {
+    const data = { PageNo, PageSize, Search, OrderBy, OrderType, Category }
+    return $ajax.get(serverUrl(`type/${tempId}/TypeDataDefine`), data)
   },
   /**
    * 添加设备类型模板数据定义
@@ -410,11 +399,8 @@ export default {
    * 删除类型模板参数信息
    * @param {String} id     模板参数标示
    */
-  removeTemplateArgs(id) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, id }
-    return $ajax.post(serverUrl('TypeTemplateArgs/Remove'), data)
+  removeTemplateArgs({ typeId, id }) {
+    return $ajax.delete(serverUrl(`type/${typeId}/TypeConfig/${id}`))
   },
   /**
    * 删除类型模板配件信息
@@ -459,24 +445,9 @@ export default {
    * @param {JSONString} Format     数据转换
    * @param {Boolean} AutoControl   用于标识该数据定义受不受手自动的影响
    */
-  modifyTemplateProfile({ TempId, Id, DataType, DataKey, DisplayKey, DataName, Unit, DefaultValue, Format, AutoControl = false }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = {
-      account,
-      token,
-      TempId,
-      Id,
-      DataType,
-      DataKey,
-      DisplayKey,
-      DataName,
-      Unit,
-      DefaultValue,
-      Format,
-      AutoControl
-    }
-    return $ajax.put(serverUrl('DeviceTypeTemplateProfile/ModifyTemplateProfile'), data)
+  modifyTemplateProfile({ tempId, Id, DataName, Unit, DataType, DefaultValue, Format, AutoControl = false, OutKey, Model = 1, Category }) {
+    const data = { Id, DataName, Unit, DataType, DefaultValue, Format, AutoControl, OutKey, Model, Category }
+    return $ajax.put(serverUrl(`type/${tempId}/TypeDataDefine`), data)
   },
   /**
    * 添加类型模板面板数据
@@ -484,11 +455,9 @@ export default {
    * @param {String} Id            类型模板面板标示
    * @param {String} PanelName     面板名称
    */
-  saveTemplatePanel({ TemplateId, Id, PanelName }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, TemplateId, Id, PanelName }
-    return $ajax.put(serverUrl('TypeTemplatePanel/Save'), data)
+  saveTemplatePanel({ tempId, DataDefineId, OutKey, AutoControl = false }) {
+    const data = { DataDefineId, OutKey, AutoControl }
+    return $ajax.put(serverUrl(`type/${tempId}/TypeDataDefine`), data)
   },
   /**
    * 修改类型模板参数信息
@@ -498,11 +467,9 @@ export default {
    * @param {String} DataValue    参数值
    * @param {String} Id           模板参数标示
    */
-  saveTemplateArgs({ TemplateId, Id, DataName, DataType, DataValue }) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, TemplateId, Id, DataName, DataType, DataValue }
-    return $ajax.put(serverUrl('TypeTemplateArgs/Save'), data)
+  saveTemplateArgs({ TypeId, Id, DataName, DataType, DataValue }) {
+    const data = { Id, DataName, DataType, DataValue }
+    return $ajax.put(serverUrl(`type/${TypeId}/TypeConfig`), data)
   },
   /**
    * 修改类型模板配件名称
@@ -599,8 +566,8 @@ export default {
   /* 
   * 获取类型参数（分页）
   */
-  typeArgument({ TempId, sortData, sortType, pageNo, pageSize }) {
-    const data = { OrderBy: sortData, OrderType: sortType, PageNo: pageNo, PageSize: pageSize }
-    return $ajax.get(serverUrl(`type/${TempId}/TypeArgument`), data)
+  typeArgument({ TempId, PageNo, PageSize, Search, OrderBy, OrderType }) {
+    const data = { PageNo, PageSize, Search, OrderBy, OrderType }
+    return $ajax.get(serverUrl(`type/${TempId}/TypeConfig`), data)
   }
 }

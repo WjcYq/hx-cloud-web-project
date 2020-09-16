@@ -8,17 +8,21 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} /</span>
+      <span style="font-weight:bold">{{ activeNode.data.typeName }} /</span>
       <span>{{ $t('image') }}</span>
     </div>
-    <el-form class="form-group" :inline="true" v-if="activeNode.data.Id">
+    <el-form class="form-group" :inline="true" v-if="activeNode.data.id">
       <el-form-item>
-        <el-button @click="selectFileClick()" icon="plus" type="primary">{{ $t('selects') + $t('image') }}</el-button>
+        <el-button
+          @click="selectFileClick()"
+          icon="plus"
+          type="primary"
+        >{{ $t('selects') + $t('image') }}</el-button>
         <!-- 上传控件（隐藏） -->
         <el-upload
           class="upload-image"
           ref="upload"
-          :action="filePostUrl"
+          :action="filePostUrl+activeNode.data.id+'/TypeImage'"
           accept="image/*"
           :data="fileData"
           :auto-upload="false"
@@ -27,42 +31,66 @@
           :on-success="onFileSuccess"
         >
           <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-          <el-button style="margin-left: 10px;" size="small" type="success" @click="fileUpload">上传到服务器</el-button>
+          <el-button
+            style="margin-left: 10px;"
+            size="small"
+            type="success"
+            @click="fileUpload"
+          >上传到服务器</el-button>
         </el-upload>
       </el-form-item>
     </el-form>
     <el-table :data="baseData" border>
-      <el-table-column prop="ImageName" label="图片名称" min-width="200">
+      <el-table-column prop="imageName" label="图片名称" min-width="200">
         <template v-slot="scope">
           <template v-if="scope.row.isEdit">
             <el-tooltip
               effect="danger"
               placement="top"
               :manual="true"
-              v-model="scope.row.validate.ImageName.isValidate"
+              v-model="scope.row.validate.imageName.isValidate"
               :ref="`DataNametooltip${scope.$index}`"
-              :content="`图片名称${scope.row.validate.ImageName.validateMsg}`"
+              :content="`图片名称${scope.row.validate.imageName.validateMsg}`"
             >
-              <el-input v-model="scope.row.ImageName" @change="inputValidate(scope.row, 'ImageName')"></el-input>
+              <el-input
+                v-model="scope.row.imageName"
+                @change="inputValidate(scope.row, 'imageName')"
+              ></el-input>
             </el-tooltip>
           </template>
-          <template v-else>{{ scope.row.ImageName }}</template>
+          <template v-else>{{ scope.row.imageName }}</template>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150">
         <template v-slot="scope">
           <template v-if="scope.row.isEdit">
-            <el-button @click="onSaveClick(scope.row, scope.$index)" type="success" size="small">{{ $t('save') }}</el-button>
+            <el-button
+              @click="onSaveClick(scope.row, scope.$index)"
+              type="success"
+              size="small"
+            >{{ $t('save') }}</el-button>
             <template v-if="scope.row.isSave">
-              <el-button @click="onDelClick(scope.row.Id, scope.$index)" type="danger" size="small">{{ $t('delete') }}</el-button>
+              <el-button
+                @click="onDelClick(scope.row.id, scope.$index)"
+                type="danger"
+                size="small"
+              >{{ $t('delete') }}</el-button>
             </template>
             <template v-else>
-              <el-button @click="onAddDelClick(scope.$index)" type="danger" size="small">{{ $t('delete') }}</el-button>
+              <el-button
+                @click="onAddDelClick(scope.$index)"
+                type="danger"
+                size="small"
+              >{{ $t('delete') }}</el-button>
             </template>
           </template>
           <template v-else>
-            <el-button @click="onEditClick(scope.row)" type="primary" size="small">{{ $t('edit') }}</el-button>
-            <el-button @click="onDelClick(scope.row.Id, scope.$index)" type="danger" size="small">{{ $t('delete') }}</el-button>
+            <!-- <el-button @click="onEditClick(scope.row)" type="primary" size="small">{{ $t('edit') }}</el-button> -->
+            <el-button
+              @click="onDelClick(scope.row.id, scope.$index)"
+              type="danger"
+              size="small"
+            >{{ $t('delete') }}</el-button>
           </template>
         </template>
       </el-table-column>
@@ -88,7 +116,7 @@ export default {
     return {
       baseData: [],
       validate: {
-        ImageName: {
+        imageName: {
           isValidate: false,
           validateMsg: ''
         }
@@ -137,6 +165,7 @@ export default {
         })
         .catch(errMsg => {
           this.$message.error(String(errMsg))
+          console.error(errMsg)
         })
     },
     // -----------------validate--------------------
@@ -159,11 +188,11 @@ export default {
     },
     rowDataValidate(rowData) {
       let isValidate = false
-      const { ImageName } = rowData
-      if (!ImageName) {
-        this.tooltipShow(rowData, 'ImageName', '不能为空')
-      } else if (ImageName.length > 50) {
-        this.tooltipShow(rowData, 'ImageName', '不能大于50字符')
+      const { imageName } = rowData
+      if (!imageName) {
+        this.tooltipShow(rowData, 'imageName', '不能为空')
+      } else if (imageName.length > 50) {
+        this.tooltipShow(rowData, 'imageName', '不能大于50字符')
       } else {
         isValidate = true
       }
@@ -195,11 +224,11 @@ export default {
       }
     },
     onFileSuccess(response) {
-      const { Success, Message } = response
+      const { Success, message } = response
       if (Success === true) {
         this.$message.success('图片上传成功')
       } else {
-        this.$message.error(Message)
+        this.$message.error(message)
       }
       this.fileData.isEdit = false
       this.handRefresh() // 刷新表单
@@ -220,39 +249,38 @@ export default {
     // 新增数据
     handleAddData(file) {
       const fileData = {
-        Id: '',
-        TypeId: this.activeNode.data.Id,
-        ImageName: file.name,
-        account: $utils.getCookie('account'),
-        token: $utils.getCookie('token'),
+        id: '',
+        typeId: this.activeNode.data.Id,
+        imageName: file.name,
         fileObj: file,
         isEdit: true,
         isSave: false,
         validate: this.$_.cloneDeep(this.validate)
       }
       this.baseData.push(fileData)
-      this.fileData = fileData
     },
     // 保存刚刚新增的数据
     onSaveClick(rowData, index) {
       const { isSave } = rowData
       if (this.rowDataValidate(rowData, index)) {
-        if (isSave) {
-          // 更新
-          this.$apis.image
-            .typeImageSave(rowData)
-            .then(result => {
-              this.$message.success(result.message)
-              rowData.isEdit = false
-            })
-            .catch(errMsg => {
-              this.$message.error(errMsg)
-              console.error(errMsg)
-            })
-        } else {
-          // 新增
-          this.fileUpload() // 文件上传
-        }
+        const file = rowData.fileObj
+        const fileData = new FormData()
+        fileData.append('imageName', file.name)
+        fileData.append('Rank', 1)
+        fileData.append('Description', '')
+        fileData.append('File', file.raw)
+        // 新增
+        this.$apis.image
+          .uploadImage({ typeId: this.activeNode.data.id, data: fileData })
+          .then(result => {
+            this.$message.success(result.message)
+            rowData.isEdit = false
+            this.handRefresh()
+          })
+          .catch(errMsg => {
+            this.$message.error(errMsg)
+            console.error(errMsg)
+          })
       }
     },
     // 编辑已经保存的数据
@@ -269,7 +297,7 @@ export default {
       this.$confirm('是否删除该图片？', '提示', { cancelButtonClass: 'el-button--cancel', closeOnClickModal: false })
         .then(() => {
           self.$apis.image
-            .typeImageDelete(id)
+            .typeImageDelete({ typeId: this.activeNode.data.id, id })
             .then(result => {
               this.$message.success(result.message)
               this.$delete(self.baseData, index)

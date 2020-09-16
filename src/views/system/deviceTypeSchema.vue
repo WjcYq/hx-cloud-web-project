@@ -6,12 +6,12 @@
  * @Description: 设备类型模式
  -->
 <template>
-  <el-card class="box-card ">
+  <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} /</span>
+      <span style="font-weight:bold">{{ activeNode.data.typeName }} /</span>
       <span>{{ $t('deviceType') + $t('mode') }}</span>
     </div>
-    <el-form class="form-group" :inline="true" v-if="activeNode.data.Id">
+    <el-form class="form-group" :inline="true" v-if="activeNode.data.id">
       <el-form-item>
         <el-button type="primary" icon="plus" @click="onAddClick()">{{ $t('add') }}</el-button>
       </el-form-item>
@@ -22,35 +22,47 @@
       :data="tableData"
       :props="defaultProps"
       :show-checkbox="false"
-      node-key="Id"
+      node-key="id"
       default-expand-all
       :highlight-current="true"
       :expand-on-click-node="false"
       :render-content="renderContent"
     ></el-tree>
-    <el-dialog :visible="isDialogVisible" width="30%" @close="isDialogVisible = false" class="edit-dialog device-type-schema" :close-on-click-modal="false" :show-close="false">
+    <el-dialog
+      :visible="isDialogVisible"
+      width="30%"
+      @close="isDialogVisible = false"
+      class="edit-dialog device-type-schema"
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
       <span slot="title" class="el-dialog__title">
-        【{{ activeNode.data.DeviceTypeName }}】 <span>{{ isAdd ? $t('adds') : $t('edits') }}</span
-        >{{ $t('deviceType') + $t('mode') }}
+        【{{ activeNode.data.typeName }}】
+        <span>{{ isAdd ? $t('adds') : $t('edits') }}</span>
+        {{ $t('deviceType') + $t('mode') }}
       </span>
       <el-form :model="fillForm" :rules="rules" ref="fillForm">
         <div class="form-group col-sm-11">
-          <el-form-item label="模式类型" prop="SchemaType">
-            <el-radio-group v-model="fillForm.SchemaType" :disabled="!isAdd || !isAddTopNode">
-              <el-radio v-for="(value, key) in type_schema_config_dic" :label="key" :key="key">{{ value }}</el-radio>
+          <el-form-item label="模式类型" prop="schemaType" v-show="isAdd">
+            <el-radio-group v-model="fillForm.schemaType">
+              <el-radio
+                v-for="(value, key) in type_schema_config_dic"
+                :label="key"
+                :key="key"
+              >{{ value }}</el-radio>
             </el-radio-group>
-            <el-tooltip content="只有新增顶级节点时才可以选择模式类型" placement="top">
-              <icon class="url-tips" name="help"></icon>
-            </el-tooltip>
           </el-form-item>
-          <el-form-item label="数据定义Key" prop="Key">
-            <el-input v-model="fillForm.Key"></el-input>
+          <el-form-item label="数据定义Id" prop="dataDefineId" v-show="isAdd">
+            <el-input v-model.number="fillForm.dataDefineId"></el-input>
           </el-form-item>
-          <el-form-item label="数据定义Value" prop="Value">
-            <el-input v-model.number="fillForm.Value"></el-input>
+          <el-form-item label="数据定义Value" prop="value" v-show="isAdd">
+            <el-input v-model.number="fillForm.value"></el-input>
           </el-form-item>
-          <el-form-item label="模式名称" prop="Name">
-            <el-input v-model="fillForm.Name"></el-input>
+          <el-form-item label="父级Id" prop="parentId" v-show="isAdd">
+            <el-input v-model.number="fillForm.parentId"></el-input>
+          </el-form-item>
+          <el-form-item label="模式名称" prop="name">
+            <el-input v-model="fillForm.name"></el-input>
           </el-form-item>
         </div>
       </el-form>
@@ -86,18 +98,18 @@ export default {
       type_schema_config_dic: TYPE_SCHEMA_CONFIG_DIC,
       defaultProps: {
         children: 'Child',
-        label: 'Name'
+        label: 'name'
       },
       fillForm: {
-        SchemaType: '',
-        Key: '',
-        Name: '',
+        schemaType: '',
+        key: '',
+        name: '',
         ParentId: '',
-        Value: '',
-        TypeId: ''
+        value: '',
+        typeId: ''
       },
       rules: {
-        Key: [
+        key: [
           {
             required: true,
             message: '请输入数据定义Key',
@@ -110,7 +122,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        Name: [
+        name: [
           {
             required: true,
             message: '请输入模式名称',
@@ -123,7 +135,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        Value: [
+        value: [
           {
             type: 'number',
             message: '请输入数字',
@@ -137,12 +149,12 @@ export default {
       },
       tableData: [],
       searchForm: {
-        SchemaType: '',
-        Key: '',
-        Name: '',
+        schemaType: '',
+        key: '',
+        name: '',
         ParentId: '',
-        Value: '',
-        TypeId: ''
+        value: '',
+        typeId: ''
       }
     }
   },
@@ -150,8 +162,8 @@ export default {
 
   watch: {
     'activeNode.data'(newVal) {
-      this.searchForm.TypeId = newVal.id
-      this.fillForm.TypeId = newVal.id
+      this.searchForm.typeId = newVal.id
+      this.fillForm.typeId = newVal.id
       this.handleRefresh()
     }
   },
@@ -190,7 +202,7 @@ export default {
       const treeNameEle = (
         <span>
           <span class="tree-name">
-            [{TYPE_SCHEMA_CONFIG_DIC[data.SchemaType]}] {data.Name}（{data.Key}：{data.Value}）
+            [{TYPE_SCHEMA_CONFIG_DIC[data.schemaType]}] {data.name}（{data.key}：{data.value}）
           </span>
         </span>
       )
@@ -214,9 +226,9 @@ export default {
     // 表单刷新
     handleRefresh() {
       this.loading = true
-      if (this.searchForm.TypeId) {
+      if (this.searchForm.typeId) {
         this.$apis.deviceType
-          .getTypeSchema(this.searchForm.TypeId)
+          .getTypeSchema(this.searchForm.typeId)
           .then(result => {
             this.tableData = result.data
           })
@@ -232,13 +244,21 @@ export default {
     // （新增/编辑）确认事件
     onSureClick() {
       const data = JSON.parse(JSON.stringify(this.fillForm))
-
+      const postData = {
+        typeId: data.typeId,
+        Id: data.id,
+        Name: data.name,
+        DataDefineId: data.dataDefineId,
+        Value: data.value,
+        ParentId: data.parentId || null,
+        SchemaType: +data.schemaType
+      }
       this.$refs.fillForm.validate(valid => {
         if (!valid) return
         if (this.isAdd) {
           // 新增
           this.$apis.deviceType
-            .addSchema(data)
+            .addSchema(postData)
             .then(result => {
               this.$message.success(result.message)
               this.isDialogVisible = false
@@ -251,7 +271,7 @@ export default {
         } else {
           // 编辑
           this.$apis.deviceType
-            .updateSchema(data)
+            .updateSchema(postData)
             .then(result => {
               this.$message.success(result.message)
               this.isDialogVisible = false
@@ -269,22 +289,22 @@ export default {
       this.isAdd = true
       this.isAddTopNode = true
       this.isDialogVisible = true
-      this.fillForm.Name = ''
-      this.fillForm.Key = ''
+      this.fillForm.name = ''
+      this.fillForm.key = ''
       this.fillForm.ParentId = ''
-      this.fillForm.SchemaType = '0'
-      this.fillForm.Value = ''
+      this.fillForm.schemaType = '0'
+      this.fillForm.value = ''
     },
     // tree添加按钮事件
     onSubNodeAdd(data) {
       this.isAdd = true
       this.isAddTopNode = false
       this.isDialogVisible = true
-      this.fillForm.Name = ''
-      this.fillForm.Key = ''
-      this.fillForm.Value = ''
-      this.fillForm.ParentId = data.Id
-      this.fillForm.SchemaType = String(data.SchemaType)
+      this.fillForm.name = ''
+      this.fillForm.key = ''
+      this.fillForm.value = ''
+      this.fillForm.ParentId = data.id
+      this.fillForm.schemaType = String(data.schemaType)
     },
     // 编辑
     onEditClick(rowData) {
@@ -292,14 +312,14 @@ export default {
       this.isAddTopNode = false
       this.isDialogVisible = true
       this.fillForm = JSON.parse(JSON.stringify(rowData))
-      this.fillForm.SchemaType = String(this.fillForm.SchemaType)
+      this.fillForm.schemaType = String(this.fillForm.schemaType)
     },
     // 删除模式
     onDelClick(rowData) {
       this.$confirm('是否删除该记录？', '提示', { cancelButtonClass: 'el-button--cancel', closeOnClickModal: false })
         .then(() => {
           this.$apis.deviceType
-            .removeSchema(rowData.Id)
+            .removeSchema({ typeId: rowData.typeId, id: rowData.id })
             .then(result => {
               this.$message.success(result.message)
               this.handleRefresh()

@@ -8,10 +8,10 @@
 <template>
   <el-card class="box-card">
     <div slot="header" class="clearfix">
-      <span style="font-weight:bold">{{ activeNode.data.DeviceTypeName }} /</span>
+      <span style="font-weight:bold">{{ activeNode.data.typeName }} /</span>
       <span>{{ $t('template') }}</span>
     </div>
-    <el-form class="form-group" :inline="true" v-if="activeNode.data.Id">
+    <el-form class="form-group" :inline="true" v-if="activeNode.data.id">
       <!--
       <el-form-item>
         <el-input placeholder="输入模板名称" v-model="searchForm.TempName">
@@ -52,7 +52,7 @@
       <el-table-column label="操作" min-width="150" width="150">
         <template v-slot="scope">
           <el-button @click="onEditClick(scope.row)" type="primary" size="small">{{ $t('edit') }}</el-button>
-          <el-button @click="onDelClick(scope.row.Id)" type="danger" size="small">{{ $t('delete') }}</el-button>
+          <el-button @click="onDelClick(scope.row.id)" type="danger" size="small">{{ $t('delete') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -70,7 +70,7 @@
 
     <el-dialog :visible="isDialogVisible" width="30%" @close="isDialogVisible = false" class="edit-dialog" :close-on-click-modal="false" :show-close="false">
       <span slot="title" class="el-dialog__title">
-        【{{ activeNode.data.DeviceTypeName }}】 <span>{{ isAdd ? $t('adds') : $t('edits') }}</span
+        【{{ activeNode.data.typeName }}】 <span>{{ isAdd ? $t('adds') : $t('edits') }}</span
         >设备类型模板
       </span>
       <el-form :model="fillForm" :rules="rules" ref="fillForm">
@@ -143,7 +143,7 @@ export default {
       // pageSize: 10, // 每页显示个数
       pageSizes: [10, 20, 30], // 每页显示个数选择器的选项设置
       searchForm: {
-        sortData: 'Id',
+        sortData: 'id',
         sortType: 'asc',
         TempName: '',
         IsStandard: '',
@@ -157,8 +157,8 @@ export default {
 
   watch: {
     // activeNode(newVal) {
-    //   this.searchForm.TypeId = newVal.data.Id
-    //   this.fillForm.TypeId = newVal.data.Id
+    //   this.searchForm.TypeId = newVal.data.id
+    //   this.fillForm.TypeId = newVal.data.id
     //   this.handleRefresh()
     // }
     'activeNode.data'(newVal) {
@@ -190,7 +190,7 @@ export default {
             this.pageTotal = result.DataCount
             this.$nextTick(() => {
               this.tableData.forEach(element => {
-                if (this.activeTpl.Id === element.Id) {
+                if (this.activeTpl.id === element.id) {
                   // 选中对应的行,成功后会自动调用 tableCurrentChange 事件
                   this.$refs.tplTable.setCurrentRow(element)
                 }

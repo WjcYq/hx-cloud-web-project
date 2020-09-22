@@ -14,10 +14,7 @@ export default {
    * 获取所有报警类型信息
    */
   getWarnTypeList() {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token }
-    return $ajax.get(serverUrl('/WarnType/GetWarnTypeList'), data)
+    return $ajax.get(serverUrl('warntype'))
   },
 
   /**
@@ -25,10 +22,7 @@ export default {
    * @param {String} id 类型标示
    */
   getWarnType(id) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, id }
-    return $ajax.get(serverUrl('/WarnType/GetWarnType'), data)
+    return $ajax.get(serverUrl(`warntype/${id}`))
   },
 
   /**

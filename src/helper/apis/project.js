@@ -83,7 +83,7 @@ export default {
    * @returns { ProjectPageDataListVO<ProjectVO> }
    */
   myProject({ pageNo, pageSize, sortData, sortType, Search }, groupId) {
-    const data = { PageNo: pageNo, PageSize: pageSize, OrderBy: sortData, OrderType: sortType, Search: Search ? Search : ''  }
+    const data = { PageNo: pageNo, PageSize: pageSize, OrderBy: sortData, OrderType: sortType, Search: Search ? Search : '' }
     return $ajax.get(serverUrl(`${groupId}/project/myProject`), data)
   },
   /**
@@ -107,7 +107,7 @@ export default {
    * @description projectName 查询字段：项目名称
    * @returns { ProjectPageDataListVO<ProjectVO> }
    */
-  mySites({ pageNo, pageSize, sortData, sortType, Search}, groupId) {
+  mySites({ pageNo, pageSize, sortData, sortType, Search, groupId }) {
     const data = { PageNo: pageNo, PageSize: pageSize, OrderBy: sortData, OrderType: sortType, Search: Search ? Search : '' }
     return $ajax.get(serverUrl(`${groupId}/project/mySite`), data)
   },
@@ -115,10 +115,8 @@ export default {
    * 获取用户所有的站场
    */
   myAllSites() {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token }
-    return $ajax.get(serverUrl('Project/MyAllSites'), data)
+    const GroupId = $utils.getCookie('GroupId')
+    return $ajax.get(serverUrl(`${GroupId}/project/mySite`))
   },
   /**
    * 获取项目的附属信息

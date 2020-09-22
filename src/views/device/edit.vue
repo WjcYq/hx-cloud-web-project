@@ -6,7 +6,14 @@
  * @Description: 设备编辑
  -->
 <template>
-  <el-dialog :visible="isVisible" width="30%" @close="onClose" class="edit-dialog" :close-on-click-modal="false" :show-close="false">
+  <el-dialog
+    :visible="isVisible"
+    width="30%"
+    @close="onClose"
+    class="edit-dialog"
+    :close-on-click-modal="false"
+    :show-close="false"
+  >
     <span slot="title" class="el-dialog__title">{{ option.title }}</span>
     <el-form :model="fillForm" :rules="rules" ref="fillForm">
       <div class="form-group col-sm-11">
@@ -20,9 +27,18 @@
           <el-input v-model="fillForm.DeviceDescription"></el-input>
         </el-form-item>
         <!-- 只有 “我的设备”或“项目下的全部设备” 才有 “所属站场” 字段 -->
-        <el-form-item label="所属站场" prop="ProjectId" v-if="isMyDevice || String(nowProject.ProjectType) === String(project_type_project)">
+        <el-form-item
+          label="所属站场"
+          prop="ProjectId"
+          v-if="isMyDevice || String(nowProject.ProjectType) === String(project_type_project)"
+        >
           <!-- 编辑时不能修改“所属站场” -->
-          <project-type-cascader v-model="fillForm.ProjectId" :nowProject="nowProject" name="所属站场" :disabled="option.opt === 'edit'"> </project-type-cascader>
+          <project-type-cascader
+            v-model="fillForm.ProjectId"
+            :nowProject="nowProject"
+            name="所属站场"
+            :disabled="option.opt === 'edit'"
+          ></project-type-cascader>
         </el-form-item>
         <el-form-item label="设备类型" prop="TypeId">
           <el-cascader
@@ -38,9 +54,18 @@
           ></el-cascader>
         </el-form-item>
         <!-- 只有选择了设备类型且为新增（DeviceSn不存在）才能选择模板 -->
-        <el-form-item v-if="fillForm.TypeId.length && !fillForm.DeviceSn" label="类型模板" prop="TempId">
+        <el-form-item
+          v-if="fillForm.TypeId.length && !fillForm.DeviceSn"
+          label="类型模板"
+          prop="TempId"
+        >
           <el-select v-model="fillForm.TempId">
-            <el-option v-for="(value, key) in deviceTypeTemp" :key="key" :label="value.TempName" :value="value.Id"></el-option>
+            <el-option
+              v-for="(value, key) in deviceTypeTemp"
+              :key="key"
+              :label="value.TempName"
+              :value="value.Id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -300,10 +325,10 @@ export default {
         this.regionsList = await this.findListRegion(RegionId, parentRegionId)
         // 根据 RegionId 从 regionsList 中筛选出从父级到该节点的所有节点的数组，用于选中该节点
         this.fillForm.Regions = $utils.selectDataFromTree({
-          data: this.regionsList,
-          parentKey: 'ParentId',
+          data: this.regionsList.data,
+          parentKey: 'parentId',
           parentNoddeflag: null,
-          serachKey: 'Id',
+          serachKey: 'id',
           serachData: this.fillForm.RegionId
         })
         // 选中该节点，同时加载对应的地域列表
@@ -321,12 +346,12 @@ export default {
     async findListRegion(regionCode, parentNodeflag = null) {
       // 区域
       let regionsList = await this.$apis.areaRegion.findListRegion(regionCode)
-      regionsList = regionsList.Data
+      regionsList = regionsList.data
       // 级联结构的区域
       this.regionsOptions = $utils.treeDataFormat({
         data: regionsList,
-        idName: 'Id',
-        parentIdName: 'ParentId',
+        idName: 'id',
+        parentIdName: 'parentId',
         parentNodeflag: parentNodeflag
       })
       return regionsList

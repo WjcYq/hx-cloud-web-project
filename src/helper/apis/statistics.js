@@ -48,11 +48,9 @@ export default {
    * 获取报警分类统计的个数（一个设备未处理只记录一次）
    * @param   {number|undefined}  projectId 项目/站场ID
    */
-  getWarnStatistics(projectId) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, projectId }
-    return $ajax.get(serverUrl('Warn/GetWarnStatistics'), data)
+  getWarnStatistics(projectId = 0) {
+    const data = { ProjectId: projectId }
+    return $ajax.get(serverUrl('Warn/statistics'), data)
   },
   /**
    * 获取设备统计数据

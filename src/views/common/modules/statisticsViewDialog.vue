@@ -33,20 +33,40 @@
         :placeholder="$t('pleaseSelect') + $t('dateRange')"
         :picker-options="pickerOptions"
       ></el-date-picker>
-      <el-button class="search-form-item" type="primary" icon="search" :loading="loading" @click="onSearchClick">{{ $t('search') }}</el-button>
+      <el-button
+        class="search-form-item"
+        type="primary"
+        icon="search"
+        :loading="loading"
+        @click="onSearchClick"
+      >{{ $t('search') }}</el-button>
     </el-form>
     <!-- tab -->
     <el-tabs v-model="activeChartIndex" type="card" @tab-click="onTabClick">
-      <el-tab-pane v-loading="loading" v-for="(tabItem, chartIndex) in chartArray" :key="chartIndex" :label="tabItem.label" :name="String(chartIndex)">
+      <el-tab-pane
+        v-loading="loading"
+        v-for="(tabItem, chartIndex) in chartArray"
+        :key="chartIndex"
+        :label="tabItem.label"
+        :name="String(chartIndex)"
+      >
         <div v-if="!staData.hasData" class="no-data">{{ $t('nodata') }}</div>
         <template v-if="staData.hasData">
           <!-- 图表 -->
           <!-- <div v-show="activeChartType === stat_show_way_chart">
           </div>-->
-          <div v-show="activeChartType === stat_show_way_chart" :id="`statistics-chart-view-${tabItem.name}`" class="statistics-chart statistics-chart-view"></div>
+          <div
+            v-show="activeChartType === stat_show_way_chart"
+            :id="`statistics-chart-view-${tabItem.name}`"
+            class="statistics-chart statistics-chart-view"
+          ></div>
 
           <!-- 表单 -->
-          <div class="statistics-table" :ref="`statisticsTable${chartIndex}`" v-show="activeChartType === stat_show_way_table">
+          <div
+            class="statistics-table"
+            :ref="`statisticsTable${chartIndex}`"
+            v-show="activeChartType === stat_show_way_table"
+          >
             <!-- 表格：固定表头 -->
             <div class="chart-view-table-wrap fixed-head" :ref="`tableHeadWrap${chartIndex}`">
               <table class="chart-view-table">
@@ -55,7 +75,9 @@
                     <th>#</th>
                     <th>{{ $t('sites') }}</th>
                     <th>{{ $t('device') }}</th>
-                    <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                    <template
+                      v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                    >
                       <th :key="`${index}_v`">{{ _date }}</th>
                     </template>
                     <th>总计</th>
@@ -72,7 +94,9 @@
                     <th>{{ $t('sites') }}</th>
                     <th>{{ $t('device') }}</th>
                     <!-- 固定列中的隐藏列的表头，为了使固定列的行高和滚动的表格的内容的行高一致 -->
-                    <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                    <template
+                      v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                    >
                       <th :key="`${index}_v`">
                         <div style="visibility:hidden;">{{ _date }}</div>
                       </th>
@@ -84,27 +108,31 @@
                   <!-- 遍历站场 -->
                   <template v-for="(station, stationKey, stationIndex) in staData.station">
                     <!-- 遍历站场中的设备 -->
-                    <tr v-for="(device, deviceKey, deviceIndex) in station._deviceObj" :key="`${stationKey}${deviceKey}`">
+                    <tr
+                      v-for="(device, deviceKey, deviceIndex) in station._deviceObj"
+                      :key="`${stationKey}${deviceKey}`"
+                    >
                       <td
                         v-if="deviceIndex === 0"
                         :rowspan="Object.keys(station._deviceObj).length > 1 ? Object.keys(station._deviceObj).length + 1 : Object.keys(station._deviceObj).length"
-                      >
-                        {{ stationIndex + 1 }}
-                      </td>
-                      <td v-if="deviceIndex === 0" :rowspan="Object.keys(station._deviceObj).length">
-                        {{ myAllSiteObj[stationKey] ? myAllSiteObj[stationKey].ProjectName : '' }}
-                      </td>
+                      >{{ stationIndex + 1 }}</td>
+                      <td
+                        v-if="deviceIndex === 0"
+                        :rowspan="Object.keys(station._deviceObj).length"
+                      >{{ myAllSiteObj[stationKey] ? myAllSiteObj[stationKey].ProjectName : '' }}</td>
                       <td>{{ device.DeviceName }}</td>
                       <!-- 固定列中的隐藏列，为了使固定列的行高和滚动的表格的内容的行高一致 -->
-                      <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                      <template
+                        v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                      >
                         <td :key="`${index}_v`">
                           <div style="visibility:hidden;">
                             {{
-                              station[tabItem.dataKey][_date]
-                                ? station[tabItem.dataKey][_date].Device[deviceKey]
-                                  ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Device[deviceKey].Values)
-                                  : '0'
-                                : '0'
+                            station[tabItem.dataKey][_date]
+                            ? station[tabItem.dataKey][_date].Device[deviceKey]
+                            ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Device[deviceKey].Values)
+                            : '0'
+                            : '0'
                             }}
                             <!-- {{ staData._baseUnit }} -->
                           </div>
@@ -117,13 +145,13 @@
                       -->
                       <td>
                         {{
-                          $utils.bigNumberFormat(
-                            Object.keys(station[tabItem.dataKey])
-                              .map(index => {
-                                return station[tabItem.dataKey][index].Device[deviceKey] ? station[tabItem.dataKey][index].Device[deviceKey].Values : '0'
-                              })
-                              .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                          )
+                        $utils.bigNumberFormat(
+                        Object.keys(station[tabItem.dataKey])
+                        .map(index => {
+                        return station[tabItem.dataKey][index].Device[deviceKey] ? station[tabItem.dataKey][index].Device[deviceKey].Values : '0'
+                        })
+                        .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                        )
                         }}
                         <!-- {{ staData._baseUnit }} -->
                       </td>
@@ -131,7 +159,9 @@
                     <!-- 各个站场中设备的合计 -->
                     <tr v-if="Object.keys(station._deviceObj).length > 1" :key="`${stationKey}all`">
                       <td colspan="2">合计</td>
-                      <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                      <template
+                        v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                      >
                         <td :key="`${index}_all`">
                           <div>
                             {{ station[tabItem.dataKey][_date] ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Values) : '0' }}
@@ -142,11 +172,11 @@
                       <!-- 根据时间合计同一站场的值 -->
                       <td>
                         {{
-                          $utils.bigNumberFormat(
-                            Object.keys(station[tabItem.dataKey])
-                              .map(index => station[tabItem.dataKey][index].Values)
-                              .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                          )
+                        $utils.bigNumberFormat(
+                        Object.keys(station[tabItem.dataKey])
+                        .map(index => station[tabItem.dataKey][index].Values)
+                        .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                        )
                         }}
                         <!-- {{ staData._baseUnit }} -->
                       </td>
@@ -155,7 +185,9 @@
                   <!-- 所有站场的总计 -->
                   <tr>
                     <td colspan="3">总计</td>
-                    <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                    <template
+                      v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                    >
                       <td :key="`${index}_totla`">
                         <div>
                           {{ staData[tabItem.dataKey][_date] ? $utils.bigNumberFormat(staData[tabItem.dataKey][_date].Values) : '0' }}
@@ -165,11 +197,11 @@
                     </template>
                     <td>
                       {{
-                        $utils.bigNumberFormat(
-                          Object.keys(staData[tabItem.dataKey])
-                            .map(index => staData[tabItem.dataKey][index].Values)
-                            .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                        )
+                      $utils.bigNumberFormat(
+                      Object.keys(staData[tabItem.dataKey])
+                      .map(index => staData[tabItem.dataKey][index].Values)
+                      .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                      )
                       }}
                       <!-- {{ staData._baseUnit }} -->
                     </td>
@@ -178,7 +210,10 @@
               </table>
             </div>
             <!-- 表格：固定表头和固定列交汇 -->
-            <div class="chart-view-table-wrap fixed-col-head-cross" :ref="`tableColHeadWrap${chartIndex}`">
+            <div
+              class="chart-view-table-wrap fixed-col-head-cross"
+              :ref="`tableColHeadWrap${chartIndex}`"
+            >
               <table class="chart-view-table">
                 <thead>
                   <tr>
@@ -191,14 +226,24 @@
             </div>
             <!-- 表格：正文 -->
             <div class="chart-view-table-wrap table-content" :ref="`tableContentWrap${chartIndex}`">
-              <EasyScrollbar class="content-scrollbar" :style="{ height: '100%' }" :ref="`tableScrollbar${chartIndex}`" :barOption="barOption">
-                <table class="chart-view-table chart-view-tabless" :ref="`tableContentView${chartIndex}`">
+              <EasyScrollbar
+                class="content-scrollbar"
+                :style="{ height: '100%' }"
+                :ref="`tableScrollbar${chartIndex}`"
+                :barOption="barOption"
+              >
+                <table
+                  class="chart-view-table chart-view-tabless"
+                  :ref="`tableContentView${chartIndex}`"
+                >
                   <thead>
                     <tr>
                       <th :ref="`tableNumCol${chartIndex}`">#</th>
                       <th :ref="`tableStationNameCol${chartIndex}`">{{ $t('sites') }}</th>
                       <th :ref="`tableDeviceNameCol${chartIndex}`">{{ $t('device') }}</th>
-                      <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                      <template
+                        v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                      >
                         <th :key="`${index}_v`">{{ _date }}</th>
                       </template>
                       <th>总计</th>
@@ -208,27 +253,31 @@
                     <!-- 遍历站场 -->
                     <template v-for="(station, stationKey, stationIndex) in staData.station">
                       <!-- 遍历站场中的设备 -->
-                      <tr v-for="(device, deviceKey, deviceIndex) in station._deviceObj" :key="`${stationKey}${deviceKey}`">
+                      <tr
+                        v-for="(device, deviceKey, deviceIndex) in station._deviceObj"
+                        :key="`${stationKey}${deviceKey}`"
+                      >
                         <td
                           v-if="deviceIndex === 0"
                           :rowspan="Object.keys(station._deviceObj).length > 1 ? Object.keys(station._deviceObj).length + 1 : Object.keys(station._deviceObj).length"
-                        >
-                          {{ stationIndex + 1 }}
-                        </td>
-                        <td v-if="deviceIndex === 0" :rowspan="Object.keys(station._deviceObj).length">
-                          {{ myAllSiteObj[stationKey] ? myAllSiteObj[stationKey].ProjectName : '' }}
-                        </td>
+                        >{{ stationIndex + 1 }}</td>
+                        <td
+                          v-if="deviceIndex === 0"
+                          :rowspan="Object.keys(station._deviceObj).length"
+                        >{{ myAllSiteObj[stationKey] ? myAllSiteObj[stationKey].ProjectName : '' }}</td>
                         <td>{{ device.DeviceName }}</td>
                         <!-- 遍历各个设备中的年月日 -->
-                        <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                        <template
+                          v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                        >
                           <td :key="`${index}_v`">
                             <div>
                               {{
-                                station[tabItem.dataKey][_date]
-                                  ? station[tabItem.dataKey][_date].Device[deviceKey]
-                                    ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Device[deviceKey].Values)
-                                    : '0'
-                                  : '0'
+                              station[tabItem.dataKey][_date]
+                              ? station[tabItem.dataKey][_date].Device[deviceKey]
+                              ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Device[deviceKey].Values)
+                              : '0'
+                              : '0'
                               }}
                               <!-- {{ staData._baseUnit }} -->
                             </div>
@@ -241,21 +290,26 @@
                         -->
                         <td>
                           {{
-                            $utils.bigNumberFormat(
-                              Object.keys(station[tabItem.dataKey])
-                                .map(index => {
-                                  return station[tabItem.dataKey][index].Device[deviceKey] ? station[tabItem.dataKey][index].Device[deviceKey].Values : '0'
-                                })
-                                .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                            )
+                          $utils.bigNumberFormat(
+                          Object.keys(station[tabItem.dataKey])
+                          .map(index => {
+                          return station[tabItem.dataKey][index].Device[deviceKey] ? station[tabItem.dataKey][index].Device[deviceKey].Values : '0'
+                          })
+                          .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                          )
                           }}
                           <!-- {{ staData._baseUnit }} -->
                         </td>
                       </tr>
                       <!-- 各个站场中设备的合计 -->
-                      <tr v-if="Object.keys(station._deviceObj).length > 1" :key="`${stationKey}all`">
+                      <tr
+                        v-if="Object.keys(station._deviceObj).length > 1"
+                        :key="`${stationKey}all`"
+                      >
                         <td colspan="2">合计</td>
-                        <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                        <template
+                          v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                        >
                           <td :key="`${index}_all`">
                             <div>
                               {{ station[tabItem.dataKey][_date] ? $utils.bigNumberFormat(station[tabItem.dataKey][_date].Values) : '0' }}
@@ -266,11 +320,11 @@
                         <!-- 根据时间合计同一站场的值 -->
                         <td>
                           {{
-                            $utils.bigNumberFormat(
-                              Object.keys(station[tabItem.dataKey])
-                                .map(index => station[tabItem.dataKey][index].Values)
-                                .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                            )
+                          $utils.bigNumberFormat(
+                          Object.keys(station[tabItem.dataKey])
+                          .map(index => station[tabItem.dataKey][index].Values)
+                          .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                          )
                           }}
                           <!-- {{ staData._baseUnit }} -->
                         </td>
@@ -279,7 +333,9 @@
                     <!-- 所有站场的总计 -->
                     <tr>
                       <td colspan="3">总计</td>
-                      <template v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()">
+                      <template
+                        v-for="(_date, index) in Object.keys(staData[tabItem.dataKey]).sort()"
+                      >
                         <td :key="`${index}_totla`">
                           <div>
                             {{ staData[tabItem.dataKey][_date] ? $utils.bigNumberFormat(staData[tabItem.dataKey][_date].Values) : '0' }}
@@ -289,11 +345,11 @@
                       </template>
                       <td>
                         {{
-                          $utils.bigNumberFormat(
-                            Object.keys(staData[tabItem.dataKey])
-                              .map(index => staData[tabItem.dataKey][index].Values)
-                              .reduce((v1, v2) => v1 * 1 + v2 * 1)
-                          )
+                        $utils.bigNumberFormat(
+                        Object.keys(staData[tabItem.dataKey])
+                        .map(index => staData[tabItem.dataKey][index].Values)
+                        .reduce((v1, v2) => v1 * 1 + v2 * 1)
+                        )
                         }}
                         <!-- {{ staData._baseUnit }} -->
                       </td>
@@ -440,8 +496,8 @@ export default {
   async created() {
     this.staData = JSON.parse(JSON.stringify(this.nullStaData))
     const myAllSites = await this.$apis.project.myAllSites()
-    myAllSites.list.forEach(item => {
-      this.myAllSiteObj[item.Id] = item
+    myAllSites.data.forEach(item => {
+      this.myAllSiteObj[item.id] = item
     })
   },
 

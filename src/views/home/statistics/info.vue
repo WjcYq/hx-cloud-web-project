@@ -266,7 +266,7 @@ export default class StatisticsInfo extends Vue {
     if (this.deviceSn === '0') {
       StatisticsApi.getWarnStatistics(projectId === '0' ? undefined : projectId)
         .then(res => {
-          const list: Array<DeviceStatsDataBO> = res.List
+          const list: Array<DeviceStatsDataBO> = res.data
           list.forEach(ele => {
             this.$set(this.deviceStateStats, String(ele.Id), {
               ...ele,

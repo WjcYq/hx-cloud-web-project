@@ -200,7 +200,7 @@ export default {
       this.$store
         .dispatch('getWarnType')
         .then(result => {
-          this.tableData = result.WarnTypes
+          this.tableData = result.data
           this.onSearchClick()
         })
         .catch(errMsg => {

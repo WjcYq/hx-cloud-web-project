@@ -122,11 +122,9 @@ const DEVICE_API = {
    * @return { Data:[{DeviceName: "", DeviceNo: "", DeviceSn: "", Online: null, Token: "", TypeId: 0}], Message:'获取设备信息成功', RegionData:[], Success:true, TypeData:[] }
    * 注：返回的数据中，Data中只包含设备的部分信息
    */
-  getDeviceOverView(projectId = 0) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, projectId }
-    return $ajax.get(serverUrl('Device/GetDeviceOverView'), data)
+  getDeviceOverView() {
+    const GroupId = $utils.getCookie('GroupId')
+    return $ajax.get(serverUrl(`${GroupId}/Device/MyDevice`))
   },
 
   /**

@@ -14,6 +14,7 @@ import { IMAGE_URL, SESSIONSTORAGE_USERMENU_KEY, SESSIONSTORAGE_ISFIRST_KEY, SES
 export default {
   async getUserInfo({ commit /** state */ }) {
     const res = await $apis.user.getUser()
+    $utils.setCookie('GroupId', res.data.groupId)
     res.data.picture = res.data.picture ? IMAGE_URL + '/' + res.data.picture + `?_=${_.random(0, 99999)}` : null
     commit('$vuexSetUserInfo', res.data)
     return res.data
@@ -89,7 +90,7 @@ export default {
 
   async getWarnType({ commit /** state, getters */ }) {
     const res = await $apis.warn.getWarnTypeList()
-    commit('$vuexSetWarnType', res.WarnTypes)
+    commit('$vuexSetWarnType', res.data)
     return res
   },
 

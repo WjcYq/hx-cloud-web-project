@@ -200,10 +200,10 @@ export default class StatisticsInfo extends Vue {
     this.deviceStateStats.online.Color = ThemeColor[this.$theme]['online']
     this.deviceStateStats.offline.Num = 0
     this.deviceStateStats.offline.Color = ThemeColor[this.$theme]['offline']
-    nv.forEach(({ Online }: DeviceOverViewDataBO) => {
+    nv.forEach(({ online }: DeviceOverViewDataBO) => {
       let isOnline = false // 是否在线
-      if (!$_.isNil(Online)) {
-        isOnline = $utils.dateCompare(new Date(), new Date(Online), 'ms') < DECIVE_ONLINE_TIME
+      if (!$_.isNil(online)) {
+        isOnline = $utils.dateCompare(new Date(), new Date(online), 'ms') < DECIVE_ONLINE_TIME
       }
       if (isOnline) {
         this.deviceStateStats.online.Num += 1
@@ -288,9 +288,9 @@ export default class StatisticsInfo extends Vue {
   getTypeData(projectId) {
     // 只统计项目、站场下的设备类型，具体的设备只有一种类型，没有统计的必要
     if (this.deviceSn === '0') {
-      DeviceApi.getDeviceOverView(projectId)
+      DeviceApi.getDeviceOverView()
         .then(res => {
-          this.deviceData = res.Data // 项目/站场下的所有设备，用于判断在线设备的数量(onDeviceDataChange)
+          this.deviceData = res.data // 项目/站场下的所有设备，用于判断在线设备的数量(onDeviceDataChange)
           this.deviceTypeStats = res.TypeData // 项目/站场下各种设备类型统计
         })
         .catch(e => {

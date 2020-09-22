@@ -128,10 +128,8 @@ export default {
    * @param   {Number}  projectId 项目ID
    */
   getListWarn(state, projectId = 0) {
-    const account = $utils.getCookie('account')
-    const token = $utils.getCookie('token')
-    const data = { account, token, state, projectId }
-    return $ajax.get(serverUrl('/Warn/GetListWarn'), data)
+    const data = { State: state, ProjectId: projectId }
+    return $ajax.get(serverUrl('Warn'), data)
   },
   /**
    * 获取我的报警信息

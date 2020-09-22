@@ -329,7 +329,7 @@ export default {
         // 获取设备的统计信息：主要是关于设备类型
         // 注：该接口同时会返回 projectId 下的所有设备；fix：待改进......
         this.$apis.device
-          .getDeviceOverView(projectId)
+          .getDeviceOverView()
           .then(res => {
             let totalNum = 0
             let typeData = res.TypeData.map(item => {

@@ -136,17 +136,17 @@ export default {
     async handRefresh() {
       this.loading = true
       this.$apis.warn
-        .getListWarn(NOTICE_STATE_UNSOLVED, this.projObj.Id)
+        .getListWarn(NOTICE_STATE_UNSOLVED, this.projObj.id)
         .then(result => {
-          this.originalData = result.Data
+          this.originalData = result.data
           const errorObj = {} // 未处理的设备报警
           // 遍历报警信息
-          result.Data.forEach(element => {
-            const { DeviceNo, Code, Dt } = element
-            errorObj[DeviceNo] = errorObj[DeviceNo] || { ts: '', error: {} }
-            errorObj[DeviceNo].ts = this.$utils.mqttReceiveDateConvert(new Date(Dt))
-            errorObj[DeviceNo].error[Code] = true // true 代表设备报警
-            errorObj[DeviceNo] = this.$utils.mqttDeviceDataFormatMethod(errorObj[DeviceNo], DeviceNo)
+          result.data.forEach(element => {
+            const { deviceNo, code, dt } = element
+            errorObj[deviceNo] = errorObj[deviceNo] || { ts: '', error: {} }
+            errorObj[deviceNo].ts = this.$utils.mqttReceiveDateConvert(new Date(dt))
+            errorObj[deviceNo].error[code] = true // true 代表设备报警
+            errorObj[deviceNo] = this.$utils.mqttDeviceDataFormatMethod(errorObj[deviceNo], deviceNo)
           })
           // 保存设备未处理的（NOTICE_STATE_UNSOLVED）报警信息
           this.$store.commit('$vuexSetDeviceError', errorObj)

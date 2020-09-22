@@ -387,7 +387,7 @@ type DeviceOverViewDataBO = {
   /**
    * 最近在线时间
    */
-  Online: string
+  online: string
   /**
    * 设备类型
    */

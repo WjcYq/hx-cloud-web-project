@@ -83,7 +83,7 @@ export default {
    * @returns { ProjectPageDataListVO<ProjectVO> }
    */
   myProject({ pageNo, pageSize, sortData, sortType, Search }, groupId) {
-    const data = { PageNo: pageNo, PageSize: pageSize, OrderBy: sortData, OrderType: sortType, Search: Search ? Search : '' }
+    const data = { PageNo: pageNo, PageSize: pageSize }
     return $ajax.get(serverUrl(`${groupId}/project/myProject`), data)
   },
   /**
